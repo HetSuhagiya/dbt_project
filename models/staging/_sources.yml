@@ -1,0 +1,14 @@
+version: 2
+
+sources:
+  - name: olist
+    database: primeval-pixel-407210
+    schema: dbt_project
+    tables:
+      - name: customers
+      - name: orders
+      - name: order_items
+      - name: order_payments
+      - name: products
+      - name: sellers
+      - name: category_translation
