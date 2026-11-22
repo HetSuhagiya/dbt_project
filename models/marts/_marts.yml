@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: fct_orders
+    description: "One row per order, with revenue, payment and delivery metrics."
+    columns:
+      - name: order_id
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_unique_id
+        data_tests:
+          - not_null
+
+  - name: dim_customers
+    description: "One row per unique customer, with order history and lifetime revenue."
+    columns:
+      - name: customer_unique_id
+        data_tests:
+          - unique
+          - not_null
