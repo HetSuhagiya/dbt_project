@@ -24,7 +24,7 @@ models:
     description: "one row per month. Orders, revenue, AOV and delivery time. Excludes cancelled and unavailable orders."
     columns:
       - name: order_month
-      data_tests:
+        data_tests:
           - unique
           - not_null
           
