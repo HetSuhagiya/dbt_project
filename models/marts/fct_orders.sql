@@ -34,6 +34,11 @@ with orders as (
         select order_id, sum(payment_value) as payment_total
         from {{ ref("stg_olist__order_payments") }}
         group by order_id
+    ),
+
+    states as (
+        select * from 
+        {{ ref('brazil_states') }}
     )
 
 select
@@ -49,8 +54,12 @@ select
     coalesce(i.item_count, 0) as item_count,
     coalesce(i.items_revenue, 0) as items_revenue,
     coalesce(i.freight_total, 0) as freight_total,
-    coalesce(p.payment_total, 0) as payment_total
+    coalesce(p.payment_total, 0) as payment_total,
+    s.state_name as customer_state_name,
+    s.region as customer_region,
+    {{ delivery_speed_bucket("date_diff(date(o.delivered_at), date(o.ordered_at), day)") }} as delivery_speed
 from orders o
 left join customers c on o.customer_id = c.customer_id
 left join order_items i on o.order_id = i.order_id
 left join payments p on o.order_id = p.order_id
+left join states s on c.customer_state = s.state_code

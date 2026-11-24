@@ -27,5 +27,10 @@ models:
         data_tests:
           - unique
           - not_null
-          
-        
+  
+  - name: customer_state
+    data_tests:
+      - relationships:
+          arguments: 
+            to: ref('brazil_states')
+            field: state
