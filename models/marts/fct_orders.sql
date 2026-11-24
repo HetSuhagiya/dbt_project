@@ -1,7 +1,22 @@
-{{ config(materialized="table") }}
+-- Incremental: Only new changes or updates are processes (checks the filter)
+-- Unique key: column to match new rows to existing ones. A match is updated and non-match is inserted (startegy = merge)
 
-with
-    orders as (select * from {{ ref("stg_olist__orders") }}),
+{{ config(
+    materialized = "incremental",
+    unique_key = "order_id",
+    incremental_strategy = "merge",
+    partition_by = {'field': 'order_date', 'data_type': 'date'} 
+) }}
+
+
+with orders as (
+        select * from {{ ref("stg_olist__orders") }}
+        {% if is_incremental() %} -- this filter will only be applied on an incremental run
+            where date(ordered_at) >= date_sub(
+                (select max(order_date) from {{ this }}), interval 7 day -- Last 7 days are selected for each run, so changes for only last 7 days will be included (`max_date - 7`).
+        ) 
+        {% endif %}
+    ),
 
     customers as (select * from {{ ref("stg_olist__customers") }}),
 
